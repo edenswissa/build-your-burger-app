@@ -91,10 +91,10 @@ class BurgerBuilder extends Component {
     purchaseContinueHandler = () => {
         this.setState({loading:true});
         console.log('continue');
-        const order = {
-            ingredients: this.state.ingredients,
-            price: this.state.totalPrice
-        }
+        // const order = {
+        //     ingredients: this.state.ingredients,
+        //     price: this.state.totalPrice
+        // }
         setTimeout(() => {
             console.log("Simulates a server request");
             this.setState({loading:false , purchasing:false});
