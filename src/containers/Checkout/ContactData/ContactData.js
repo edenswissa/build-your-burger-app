@@ -1,33 +1,98 @@
 import React, { Component } from 'react'
 import Button from '../../../components/UI/Button/Button';
 import Style from './ContactData.module.css';
+import Input from '../../../components/UI/Input/Input'
 
 class ContactData extends Component {
 
     state = {
-        name:"",
-        email: "",
-        address:{
-            street:"",
-            postalCode:""
+        orderForm: {
+            name: this.createInputData('input','text','Name','',{required:true}),
+            street: this.createInputData('input','text','Street',''),
+            zipCode: this.createInputData('input','text','Zip Code','',{required:true, minLength:5}),
+            email: this.createInputData('input','email','Email','',{required:true})
+        },
+        orderData:{}
+    }
+
+    createInputData(elementType, type, placeholder, value, validation) {
+        return {
+            elementType: elementType,
+            elementConfig: {
+                type: type,
+                placeholder: placeholder
+            },
+            value: value,
+            validation: validation,
+            valid:false,
+            touched: false
         }
     }
 
     onOrderHandler = (event) => {
         event.preventDefault();
-        console.log(this.props.ingredients, this.props.price);
+        const formData ={};
+        for (let key in this.state.orderForm) {
+            formData[key] = this.state.orderForm[key].value;
+        }
+        this.setState({formData: formData});
+    }
+
+    onInputChangedHandler = (event,id) => {
+        const updatedOrderForm = {
+            ...this.state.orderForm
+        };
+        const updatedFormElement = {
+            ...updatedOrderForm[id]
+        };
+        updatedFormElement.value = event.target.value;
+        updatedFormElement.valid = this.checkValidity(updatedFormElement.value,updatedFormElement.validation);
+        updatedFormElement.touched = true;
+        updatedOrderForm[id] = updatedFormElement;
+        this.setState({orderForm: updatedOrderForm});
+    }
+
+    checkValidity(value, rules) {
+        let isValid = true;
+
+        if(rules.required) {
+            isValid = value.trim() !== '' && isValid;
+        }
+
+        if(rules.minLength) {
+            isValid = value.length >= rules.minLength && isValid;
+        }
+
+        return isValid;
     }
 
     render() {
+
+        const inputs = [];
+        for (let key in this.state.orderForm) {
+            inputs.push({
+                id:key,
+                config:this.state.orderForm[key]
+            });
+        }
+
+
         return (
             <div className={Style.ContactData}>
                 <h4>Enter your contact data</h4>
-                <form>
-                    <input className={Style.Input} type="text" placeholder="email"/>
-                    <input className={Style.Input} type="text" placeholder="street"/>
-                    <input className={Style.Input} type="text" placeholder="name"/>
-                    <input className={Style.Input} type="text" placeholder="postal code"/>
-                    <Button on_click={this.onOrderHandler} btnStyle="Success">Continue</Button>
+                <form onSubmit={this.onOrderHandler}>
+                    {inputs.map((input,index)=> {
+                        return <Input 
+                                elementConfig={input.config.elementConfig} 
+                                elementType={input.config.elementType} 
+                                value={input.config.value} 
+                                key={input.id}
+                                changed={(event) => this.onInputChangedHandler(event,input.id)}
+                                shouldValid={input.config.validation}
+                                invalid={!input.config.valid}
+                                touched={input.config.touched}/>
+                    })}
+                    <Button btnStyle="Success">Continue</Button>
                 </form>
             </div>
         )
