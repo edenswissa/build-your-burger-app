@@ -29,8 +29,7 @@ class Checkout extends Component {
                     ingredients={this.props.ingredients} 
                     checkoutCanceled={this.checkoutCanceledHandler}
                     checkoutContinued={this.checkoutContinuedHandler}/>
-                <Route path={this.props.match.url + '/contact-data'} exact 
-                    render={() => (<ContactData ingredients={this.props.ingredients} price={this.props.totalPrice}/>)}/>
+                <Route path={this.props.match.url + '/contact-data'} exact component={ContactData}/>
             </div>
         )
     }
@@ -39,7 +38,6 @@ class Checkout extends Component {
 const mapsStateProps = state => {
     return {
         ingredients: state.ingredients,
-        price: state.totalPrice
     }
 }
 
